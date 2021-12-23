@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>生成箱线图</title>
+    <style>
+    </style>
+</head>
+<body style="margin: 0">
+<div id="container" style="height: 400px; width: 1024px;border: 1px solid gray"></div>
+<input type="file" onchange="fileChange()" id="file"/>
+<button onclick="handleDownload()">下载</button>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+<script type="text/javascript">
+    const dom = document.getElementById("container");
+    const myChart = echarts.init(dom, null, {renderer: 'svg'});
+
+    function handleDownload() {
+        const content = document.querySelector('svg').outerHTML
+        const blob = new Blob([content], {type: 'xml/svg'})
+
+        const elink = document.createElement('a');
+        elink.download = "test.svg";
+        elink.style.display = 'none';
+        elink.href = URL.createObjectURL(blob);
+        document.body.appendChild(elink);
+        elink.click();
+        URL.revokeObjectURL(elink.href); // 释放URL 对象
+        document.body.removeChild(elink);
+    }
+
+    function fileChange() {
+        const selectedFile = document.getElementById('file').files[0];
+        const reader = new FileReader();
+        reader.readAsText(selectedFile);
+        reader.onload = function () {
+            showEChart(JSON.parse(this.result), selectedFile.name.split('.')[0])
+        }
+    }
+
+    function showEChart(data, title) {
+        let option;
+
+        const ratio = ['1%', '0.5%', '0.1%'];
+        option = {
+            title: [
+                {
+                    text: 'Φ1',
+                    left: '16%',
+                    bottom: '2%',
+                    textStyle: {
+                        fontSize: '14px'
+                    }
+                },
+                {
+                    text: 'Φ2',
+                    left: '48%',
+                    bottom: '2%',
+                    textStyle: {
+                        fontSize: '14px'
+                    }
+                },
+                {
+                    text: 'Φ3',
+                    left: '80%',
+                    bottom: '2%',
+                    textStyle: {
+                        fontSize: '14px'
+                    }
+                }
+            ],
+            dataset: [
+                {
+                    source: data[0][0]
+                },
+                {
+                    source: data[0][1]
+                },
+                {
+                    source: data[0][2]
+                },
+                {
+                    fromDatasetIndex: 0,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    fromDatasetIndex: 1,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    fromDatasetIndex: 2,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    source: data[1][0]
+                },
+                {
+                    source: data[1][1]
+                },
+                {
+                    source: data[1][2]
+                },
+                {
+                    fromDatasetIndex: 6,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    fromDatasetIndex: 7,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    fromDatasetIndex: 8,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    source: data[2][0]
+                },
+                {
+                    source: data[2][1]
+                },
+                {
+                    source: data[2][2]
+                },
+                {
+                    fromDatasetIndex: 12,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    fromDatasetIndex: 13,
+                    transform: {type: 'boxplot'}
+                },
+                {
+                    fromDatasetIndex: 14,
+                    transform: {type: 'boxplot'}
+                }
+            ],
+            legend: {
+                top: '2%',
+                itemStyle: {
+                    color: 'transparent',
+                    borderColor: 'black'
+                },
+                lineStyle: {
+                    color: 'black'
+                }
+            },
+            grid: [
+                {left: '4%', top: '12%', height: '75%', width: '28%'},
+                {left: '36%', top: '12%', height: '75%', width: '28%'},
+                {left: '68%', top: '12%', height: '75%', width: '28%'}
+            ],
+            aria: {
+                enabled: true,
+                decal: {
+                    show: true
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: true,
+                    nameGap: 30,
+                    splitArea: {
+                        show: true,
+                        areaStyle: {
+                            shadowColor: 'red'
+                        }
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    gridIndex: 0,
+                    axisLabel: {
+                        formatter: function (value, index) {
+                            return ratio[index];
+                        }
+                    }
+                },
+                {
+                    type: 'category',
+                    boundaryGap: true,
+                    nameGap: 30,
+                    splitArea: {
+                        show: true
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    gridIndex: 1,
+                    axisLabel: {
+                        formatter: function (value, index) {
+                            return ratio[index];
+                        }
+                    }
+                },
+                {
+                    type: 'category',
+                    boundaryGap: true,
+                    nameGap: 30,
+                    splitArea: {
+                        show: true
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    gridIndex: 2,
+                    axisLabel: {
+                        formatter: function (value, index) {
+                            return ratio[index];
+                        }
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    gridIndex: 0,
+                    max: 4,
+                    splitArea: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function (value, index) {
+                            return '1e' + value;
+                        }
+                    }
+                },
+                {
+                    type: 'value',
+                    gridIndex: 1,
+                    max: 4,
+                    splitArea: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function (value, index) {
+                            return '1e' + value;
+                        }
+                    }
+                },
+                {
+                    type: 'value',
+                    gridIndex: 2,
+                    max: 4,
+                    splitArea: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function (value, index) {
+                            return '1e' + value;
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '加权',
+                    type: 'boxplot',
+                    datasetIndex: 3,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0
+                },
+                {
+                    name: '混合',
+                    type: 'boxplot',
+                    datasetIndex: 4,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0
+                },
+                {
+                    name: '基本',
+                    type: 'boxplot',
+                    datasetIndex: 5,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0
+                },
+                {
+                    name: '加权',
+                    type: 'boxplot',
+                    datasetIndex: 9,
+                    xAxisIndex: 1,
+                    yAxisIndex: 1
+                },
+                {
+                    name: '混合',
+                    type: 'boxplot',
+                    datasetIndex: 10,
+                    xAxisIndex: 1,
+                    yAxisIndex: 1
+                },
+                {
+                    name: '基本',
+                    type: 'boxplot',
+                    datasetIndex: 11,
+                    xAxisIndex: 1,
+                    yAxisIndex: 1
+                },
+                {
+                    name: '加权',
+                    type: 'boxplot',
+                    datasetIndex: 15,
+                    xAxisIndex: 2,
+                    yAxisIndex: 2
+                },
+                {
+                    name: '混合',
+                    type: 'boxplot',
+                    datasetIndex: 16,
+                    xAxisIndex: 2,
+                    yAxisIndex: 2
+                },
+                {
+                    name: '基本',
+                    type: 'boxplot',
+                    datasetIndex: 17,
+                    xAxisIndex: 2,
+                    yAxisIndex: 2
+                }
+            ]
+        };
+        myChart.setOption(option);
+    }
+</script>
+</body>
+</html>
